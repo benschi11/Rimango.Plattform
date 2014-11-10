@@ -1,0 +1,122 @@
+﻿@using Rimango.Plattform.ViewModels
+
+
+@{
+    var regForm = (RegisterViewModel)Model.regForm;
+    Style.Require("Rimango.BootstrapValidator");
+    Script.Require("Rimango.BootstrapValidator.DE");
+}
+
+<h2>@T("Register Account")</h2>
+<p>@T("Please fill out the form below")</p>
+
+@Html.ValidationSummary()
+
+@using (Html.BeginFormAntiForgeryPost(Url.Action("Register", "User", new { area = "Rimango.Plattform" }), FormMethod.Post, new { id = "registrationForm" }))
+{
+    <article class="form">
+        <fieldset>
+            <ul>
+                <li>
+                    <div class="form-group">
+                        <div class="field-label">@Html.LabelFor(m => regForm.Email, T("Email"))</div>
+                        <div class="field-editor">@Html.EditorFor(m => regForm.Email)</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group">
+                        <div class="field-label">@Html.LabelFor(m => regForm.Password, T("Password"))</div>
+                        <div class="field-editor">@Html.EditorFor(m => regForm.Password)</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="form-group">
+                        <div class="field-label">@Html.LabelFor(m => regForm.RepeatPassword, T("Repeat password"))</div>
+                        <div class="field-editor">@Html.EditorFor(m => regForm.RepeatPassword)</div>
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+
+        <fieldset>
+            <ul>
+                <li>
+                    <div class="checkbox-and-label">
+                        <div class="checkbox">@Html.CheckBoxFor(m => regForm.ReceiveNewsletter)</div>
+                        <div class="label">@Html.LabelFor(m => regForm.ReceiveNewsletter, T("Subscribe to our mailing list"))</div>
+                    </div>
+                </li>
+                @*<li>
+                        <div class="checkbox-and-label">
+                            <div class="checkbox">@Html.CheckBoxFor(m => Model.AcceptTerms)</div>
+                            <div class="label">
+                                <label for="@Html.FieldIdFor(m => Model.AcceptTerms)">
+                                    @Html.Raw(T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", "#").ToString())
+                                </label>
+                            </div>
+                        </div>
+                    </li>*@
+            </ul>
+        </fieldset>
+
+        <footer class="commands">
+            <ul>
+                <li class="align left"><a href="#">@T("Cancel")</a></li>
+                <li class="align right"><button type="submit">@T("Register")</button></li>
+            </ul>
+        </footer>
+    </article>
+}
+
+@using (Script.Foot())
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#registrationForm').bootstrapValidator({
+                feedbackIcons: {
+                    required: 'glyphicon glyphicon-asterisk',
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    '@Html.NameFor(m => regForm.Email)': {
+                        message: 'The username is not valid',
+                        validators: {
+                            // The validator will create an Ajax request
+                            // sending { username: 'its value' } to the back-end
+                            remote: {
+                                message: 'The username is not available',
+                                url: '@Url.Action("ValidateUserName", "Validation", new { area = "Rimango.BootstrapValidation" })',
+                                data: function (validator) {
+                                    return {
+                                        fieldValue: validator.getFieldElements('@Html.NameFor(m => regForm.Email)').val(),
+                                        fieldType: "username"
+                                    };
+                                },
+                                delay: "2",
+                                type: "POST"
+                            }
+                        }
+                    },
+                    '@Html.NameFor(m => regForm.Password)': {
+                        validators: {
+                            identical: {
+                                field: '@Html.NameFor(m => regForm.RepeatPassword)',
+                                message: 'The password and its confirm are not the same'
+                            }
+                        }
+                    },
+                    '@Html.NameFor(m => regForm.RepeatPassword)': {
+                        validators: {
+                            identical: {
+                                field: '@Html.NameFor(m => regForm.Password)',
+                                message: 'The password and its confirm are not the same'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,113 @@
+﻿@model Rimango.Plattform.Models.PlattformUserPart
+@{
+    Style.Require("Rimango.BootstrapValidator");
+    Script.Require("Rimango.BootstrapValidator.DE").AtFoot();
+}
+
+
+
+<fieldset>
+    <div class="form-group">
+        <div class="editor-label">@Html.LabelFor(x => x.Title)</div>
+        <div class="editor-field">@Html.EditorFor(x => x.Title)</div>
+    </div>
+    <div class="form-group">
+        <div class="editor-label">@Html.LabelFor(x => x.FirstName)</div>
+        <div class="editor-field">
+            @Html.EditorFor(x => x.FirstName)
+            @Html.ValidationMessageFor(x => x.FirstName)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="editor-label required">@Html.LabelFor(x => x.LastName)</div>
+        <div class="editor-field">
+            @Html.EditorFor(x => x.LastName)
+            @Html.ValidationMessageFor(x => x.LastName)
+        </div>
+    </div>
+</fieldset>
+
+
+@using (Script.Foot())
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('form')
+                // IMPORTANT: You must declare .on('init.field.bv')
+                // before calling .bootstrapValidator(options)
+                .on('init.field.bv', function(e, data) {
+                    // data.bv      --> The BootstrapValidator instance
+                    // data.field   --> The field name
+                    // data.element --> The field element
+
+                    var $parent = data.element.parents('.form-group'),
+                        $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                        options = data.bv.getOptions(), // Entire options
+                        validators = data.bv.getOptions(data.field).validators; // The field validators
+
+                    if (validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required) {
+                        // The field uses notEmpty validator
+                        // Add required icon
+                        $icon.addClass(options.feedbackIcons.required).show();
+                    }
+                })
+                .bootstrapValidator({
+                    message: 'This value is not valid',
+                    feedbackIcons: {
+                        required: 'glyphicon glyphicon-asterisk',
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        '@Html.NameFor(x => x.LastName)': {
+                            message: 'The lastname is not valid',
+                            validators: {
+                                notEmpty: {
+                                    message: 'The lastname is required and cannot be empty'
+                                },
+                                stringLength: {
+                                    min: 2,
+                                    max: 30,
+                                    message: 'The lastname must be more than 2 and less than 30 characters long'
+                                },
+                                regexp: {
+                                    regexp: /^[a-zA-Z]+$/,
+                                    message: 'The lastname can only consist of alphabetical'
+                                }
+                            }
+                        },
+                        '@Html.NameFor(x => x.FirstName)': {
+                            message: 'The firstname is not valid',
+                            validators: {
+                                notEmpty: {
+                                    message: 'The firstname is required and cannot be empty'
+                                },
+                                stringLength: {
+                                    min: 2,
+                                    max: 30,
+                                    message: 'The firstname must be more than 2 and less than 30 characters long'
+                                },
+                                regexp: {
+                                    regexp: /^[a-zA-Z]+$/,
+                                    message: 'The firstname can only consist of alphabetical'
+                                }
+                            }
+                        }
+                    }
+
+                });
+            //.on('status.field.bv', function(e, data) {
+            //    // Remove the required icon when the field updates its status
+            //    var $parent = data.element.parents('.form-group'),
+            //        $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+            //        options = data.bv.getOptions(), // Entire options
+            //        validators = data.bv.getOptions(data.field).validators; // The field validators
+
+            //    if (validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required) {
+            //        $icon.removeClass(options.feedbackIcons.required).addClass('fa');
+            //    }
+            //});
+        });
+    </script>
+}
