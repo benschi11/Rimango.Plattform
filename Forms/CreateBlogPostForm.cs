@@ -59,14 +59,15 @@ namespace Rimango.Plattform.Forms
                            
                             ));
 
-                    foreach (var blog in _blogService.Get(VersionOptions.Published)) {
-                        form._Type._BlogId.Add(new SelectListItem { Value = blog.Id.ToString(), Text = blog.Name});
+                    foreach (var blog in _blogService.Get(VersionOptions.Published))
+                    {
+                        form._Type._BlogId.Add(new SelectListItem { Value = blog.Id.ToString(), Text = blog.Name });
                     }
 
                     return form;
                 };
 
-            context.Form("CreateBlogPostActivtiy", formFactory);
+            context.Form(Globals.Forms.CreateBlogPostForm, formFactory);
         }
     }
 

@@ -47,7 +47,7 @@ namespace Rimango.Plattform.Activities
         }
 
         public override string Form {
-            get { return "CreateBlogPostActivtiy"; }
+            get { return Globals.Forms.CreateBlogPostForm; }
         }
 
         public override IEnumerable<LocalizedString> Execute(WorkflowContext workflowContext, ActivityContext activityContext) {

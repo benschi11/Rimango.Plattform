@@ -13,5 +13,9 @@ namespace Rimango.Plattform
             public static string Body = "Body";
             public static string BlogId = "BlogId";
         }
+
+        public struct Forms {
+            public static string CreateBlogPostForm = "CreateBlogPostForm";
+        }
     }
 }
