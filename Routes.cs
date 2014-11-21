@@ -15,7 +15,8 @@ namespace Rimango.Plattform
 
         public void GetRoutes(ICollection<RouteDescriptor> routes)
         {
-            foreach (var routeDescriptor in GetRoutes()) routes.Add(routeDescriptor);
+            foreach (var routeDescriptor in GetRoutes()) 
+                routes.Add(routeDescriptor);
         }
 
         public IEnumerable<RouteDescriptor> GetRoutes()
@@ -24,7 +25,8 @@ namespace Rimango.Plattform
                        {
                            new RouteDescriptor
                                {
-                                   Priority = 5,
+                                   Name = "PlattformRegister",
+                                   Priority = 6,
                                    Route =
                                        new Route(
                                        "Plattform/Register",
@@ -32,7 +34,7 @@ namespace Rimango.Plattform
                                            {
                                                { "area", "Rimango.Plattform" },
                                                { "controller", "User" },
-                                               { "action", "register" }
+                                               { "action", "Register" }
                                            },
                                        new RouteValueDictionary(),
                                        new RouteValueDictionary { { "area", "Orchard.Plattform" } },

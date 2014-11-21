@@ -80,7 +80,7 @@ namespace Rimango.Plattform.Forms
 
         public void Validating(ValidatingContext context)
         {
-            if (context.FormName != "CreateBlogPostActivtiy") return;
+            if (context.FormName != Globals.Forms.CreateBlogPostForm) return;
 
             var user = context.ValueProvider.GetValue(Globals.WorkflowParam.User).AttemptedValue;
             var title = context.ValueProvider.GetValue(Globals.WorkflowParam.Title).AttemptedValue;

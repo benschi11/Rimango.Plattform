@@ -38,31 +38,31 @@
             </ul>
         </fieldset>
 
-        <fieldset>
-            <ul>
-                <li>
-                    <div class="checkbox-and-label">
-                        <div class="checkbox">@Html.CheckBoxFor(m => regForm.ReceiveNewsletter)</div>
-                        <div class="label">@Html.LabelFor(m => regForm.ReceiveNewsletter, T("Subscribe to our mailing list"))</div>
-                    </div>
-                </li>
-                @*<li>
+        @*<fieldset>
+                <ul>
+                    <li>
                         <div class="checkbox-and-label">
-                            <div class="checkbox">@Html.CheckBoxFor(m => Model.AcceptTerms)</div>
-                            <div class="label">
-                                <label for="@Html.FieldIdFor(m => Model.AcceptTerms)">
-                                    @Html.Raw(T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", "#").ToString())
-                                </label>
-                            </div>
+                            <div class="checkbox">@Html.CheckBoxFor(m => regForm.ReceiveNewsletter)</div>
+                            <div class="label">@Html.LabelFor(m => regForm.ReceiveNewsletter, T("Subscribe to our mailing list"))</div>
                         </div>
-                    </li>*@
-            </ul>
-        </fieldset>
+                    </li>
+                    <li>
+                            <div class="checkbox-and-label">
+                                <div class="checkbox">@Html.CheckBoxFor(m => Model.AcceptTerms)</div>
+                                <div class="label">
+                                    <label for="@Html.FieldIdFor(m => Model.AcceptTerms)">
+                                        @Html.Raw(T("I have read and accept the <a href=\"{0}\" target=\"_blank\">Terms and Conditions</a>", "#").ToString())
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                </ul>
+            </fieldset>*@
 
-        <footer class="commands">
-            <ul>
-                <li class="align left"><a href="#">@T("Cancel")</a></li>
-                <li class="align right"><button type="submit">@T("Register")</button></li>
+        <footer class="commands row">
+            <ul class="col-md-offset-4 col-md-4">
+                <li class="pull-left"><button type="submit" class="btn btn-primary">@T("Register")</button></li>
+                <li class="pull-right"><a href="@Url.Content("~")" class="btn btn-default">@T("Cancel")</a></li>
             </ul>
         </footer>
     </article>
@@ -72,51 +72,73 @@
 {
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#registrationForm').bootstrapValidator({
-                feedbackIcons: {
-                    required: 'glyphicon glyphicon-asterisk',
-                    valid: 'glyphicon glyphicon-ok',
-                    invalid: 'glyphicon glyphicon-remove',
-                    validating: 'glyphicon glyphicon-refresh'
-                },
-                fields: {
-                    '@Html.NameFor(m => regForm.Email)': {
-                        message: 'The username is not valid',
-                        validators: {
-                            // The validator will create an Ajax request
-                            // sending { username: 'its value' } to the back-end
-                            remote: {
-                                message: 'The username is not available',
-                                url: '@Url.Action("ValidateUserName", "Validation", new { area = "Rimango.BootstrapValidation" })',
-                                data: function (validator) {
-                                    return {
-                                        fieldValue: validator.getFieldElements('@Html.NameFor(m => regForm.Email)').val(),
-                                        fieldType: "username"
-                                    };
+            $("#registrationForm input").addClass("form-control");
+            $('#registrationForm')
+                .on('init.field.bv', function(e, data) {
+
+                    var $parent = data.element.parents('.form-group'),
+                        $icon = $parent.find('.form-control-feedback[data-bv-icon-for="' + data.field + '"]'),
+                        options = data.bv.getOptions(), // Entire options
+                        validators = data.bv.getOptions(data.field).validators; // The field validators
+
+                    if (validators.notEmpty && options.feedbackIcons && options.feedbackIcons.required) {
+                        $icon.addClass(options.feedbackIcons.required).show();
+                    }
+                })
+                .bootstrapValidator({
+                    feedbackIcons: {
+                        required: 'glyphicon glyphicon-asterisk',
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        '@Html.NameFor(m => regForm.Email)': {
+                            message: 'Ihre Emailadresse ist nicht korrekt',
+                            validators: {
+                                // The validator will create an Ajax request
+                                // sending { username: 'its value' } to the back-end
+                                remote: {
+                                    message: 'Es existiert bereits ein Benutzer mit dieser Emailadresse.',
+                                    url: '@Url.Action("ValidateUserNameEmail", "Validation", new { area = "Rimango.BootstrapValidation" })',
+                                    data: function(validator) {
+                                        return {
+                                            fieldValue: validator.getFieldElements('@Html.NameFor(m => regForm.Email)').val(),
+                                            fieldType: "username"
+                                        };
+                                    },
+                                    delay: "2",
+                                    type: "POST"
                                 },
-                                delay: "2",
-                                type: "POST"
+                                notEmpty: {
+                                    message: "Dieses Feld ist ein Pflichtfeld."
+                                }
                             }
-                        }
-                    },
-                    '@Html.NameFor(m => regForm.Password)': {
-                        validators: {
-                            identical: {
-                                field: '@Html.NameFor(m => regForm.RepeatPassword)',
-                                message: 'The password and its confirm are not the same'
+                        },
+                        '@Html.NameFor(m => regForm.Password)': {
+                            validators: {
+                                identical: {
+                                    field: '@Html.NameFor(m => regForm.RepeatPassword)',
+                                    message: 'The password and its confirm are not the same'
+                                },
+                                notEmpty: {
+                                    message: 'Passwort ist erforderlich'
+                                }
                             }
-                        }
-                    },
-                    '@Html.NameFor(m => regForm.RepeatPassword)': {
-                        validators: {
-                            identical: {
-                                field: '@Html.NameFor(m => regForm.Password)',
-                                message: 'The password and its confirm are not the same'
+                        },
+                        '@Html.NameFor(m => regForm.RepeatPassword)': {
+                            validators: {
+                                identical: {
+                                    field: '@Html.NameFor(m => regForm.Password)',
+                                    message: 'The password and its confirm are not the same'
+                                },
+                                notEmpty: {
+                                    message: "Bitte geben Sie ihre Passwort erneut ein."
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
         });
     </script>
 }
